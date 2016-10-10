@@ -135,11 +135,11 @@ string Card::get_english_rank() const {
 	case SIETE:
 		english_rank = "Seven"; break;
 	case SOTA:
-		english_rank = "Ten"; break;
+		english_rank = "Jack"; break;
 	case CABALLO:
-		english_rank = "Eleven"; break;
+		english_rank = "Queen"; break;
 	case REY:
-		english_rank = "Twelve"; break;
+		english_rank = "King"; break;
 	}
 	return english_rank;
 }
@@ -153,7 +153,7 @@ int Card::get_rank() const {
 
 // Returns the value of the card
 double Card::get_value() const{
-	if ((this->get_english_rank() == "Ten") || (this->get_english_rank() == "Eleven") || (this->get_english_rank() == "Twelve")){
+	if ((this->get_english_rank() == "Jack") || (this->get_english_rank() == "Queen") || (this->get_english_rank() == "King")){
 		return 0.5;
 	}
 	else
@@ -172,7 +172,7 @@ bool Card::operator < (Card card2) const {
 Hand class
 ************************************************* */
 // Default constructor, creates an empty vector cards
-Hand::Hand(){}
+Hand::Hand(): value(0){}
 
 // Generate a random card, display its statistics, and add it to the hand 
 void Hand::draw(){
@@ -180,14 +180,22 @@ void Hand::draw(){
 	cards.push_back(newcard);
 	std::cout << "The card drawn is the " << newcard.get_english_rank() << " of " << newcard.get_english_suit() << "\n";
 	value += newcard.get_value();
-	std::cout << "The current hand value is: " << value << "\n";
+}
+
+// Displays all cards in hand
+// If the hand's value goes above 7.5, then the player will be alerted that his hand has been busted
+// Also shows the hand's value
+void Hand::show_hand(){
+	for (auto i = 0; i < cards.size(); i++){
+		std::cout << cards[i].get_english_rank() << " de " << cards[i].get_english_suit() << "\n";
+	}
+	std::cout << "The value of the hand is: " << value << "\n";
 }
 
 // Checks to see if total value has exceeded bust value
 // Returns 1 if busted, 0 if not
 bool Hand::bust(){
 	if (value > 7.5){
-		std::cout << "Hand busted!" << "\n";
 		return 1;
 	}
 	else return 0;
@@ -205,22 +213,28 @@ double Hand::hand_value() const{
 // 3 cases: 1 if player wins, 0 if dealer wins, 2 if they draw
 unsigned int Hand::compare(Hand dealer){
 	if ((this->bust() == 1) && (dealer.bust() == 1)){
+		std::cout << "Dealer wins by house advantage" << "\n";
 		return 0;
 	}
 	else if ((this->bust() == 1) && (dealer.bust() == 0)){
+		std::cout << "Dealer wins!" << "\n";
 		return 0;
 	}
 	else if ((this->bust() == 0) && (dealer.bust() == 1)){
+		std::cout << "Player wins!" << "\n";
 		return 1;
 	}
 	else if ((this->bust() == 0) && (dealer.bust() == 0)){
 		if (this->hand_value() == dealer.hand_value()){
+			std::cout << "Draw!" << "\n";
 			return 2;
 		}
 		else if (this->hand_value() > dealer.hand_value()){
+			std::cout << "Player wins!" << "\n";
 			return 1;
 		}
 		else if (this->hand_value() < dealer.hand_value()){
+			std::cout << "Dealer wins!" << "\n";
 			return 0;
 		}
 	}
@@ -231,12 +245,23 @@ unsigned int Hand::compare(Hand dealer){
 Player class
 ************************************************* */
 // Constructor: gives player m dollars 
-Player::Player(int m) : money(m) {} 
+Player::Player(int m) : money(m), total_loss(0) {} 
 
+// Accessor: returns the amount of money the player has
+int Player::get_balance(){
+	return money;
+}
+
+int Player::get_total_loss(){
+	return total_loss;
+}
 // Transfers money from one person to another, amount (the bet) can be positive or negative;
 // A positive amount means "this" player gained money from dealer
 // A negative amount means "this" player gives money to dealer
-void Player::exchange_money(Player dealer, int amount){
-	money += amount;
+void Player::exchange_money(Player& dealer, const int amount){
+	money +=amount;
 	dealer.money -= amount;
+	if (amount < 0){
+		total_loss += amount;
+	}
 }

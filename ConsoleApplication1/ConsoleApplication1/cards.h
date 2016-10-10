@@ -66,6 +66,7 @@ class Hand {
 public:
 	Hand();
 	void draw(); // Draws a random card from the deck 
+	void show_hand();
 	bool bust(); // Check if the hand has gone bust (i.e. the values of the cards exceed 7.5) [implementing... done]
 	double hand_value() const; // Returns total value of cards in hand
 	unsigned int compare(Hand dealer); // Compares two hands to see which as the higher value 
@@ -78,10 +79,12 @@ private:
 class Player {
 public:
 	Player(int m);
-	void exchange_money(Player dealer, int amount);
+	int get_balance();
+	int get_total_loss();
+	void exchange_money(Player& dealer, const int amount);
 private:
 	int money;
-	
+	int total_loss;
 };
 
 #endif
