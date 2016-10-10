@@ -8,13 +8,6 @@
 /* *************************************************
 Card class
 ************************************************* */
-
-/*
-Default constructor for the Card class.
-It could give repeated cards. This is OK.
-Most variations of Blackjack are played with
-several decks of cards at the same time.
-*/
 Card::Card(){
 	int r = 1 + rand() % 4;
 	switch (r) {
@@ -102,25 +95,69 @@ string Card::get_spanish_rank() const {
 }
 
 
-
 // Accessor: returns a string with the suit of the card in English 
-// This is just a stub! Modify it to your liking.
 string Card::get_english_suit() const {
-	return "";
+	string suitName;
+	switch (suit) {
+	case OROS:
+		suitName = "Golds";
+		break;
+	case COPAS:
+		suitName = "Cups";
+		break;
+	case ESPADAS:
+		suitName = "Swords";
+		break;
+	case BASTOS:
+		suitName = "Clubs";
+		break;
+	default: break;
+	}
+	return suitName; 
 }
 
 // Accessor: returns a string with the rank of the card in English 
-// This is just a stub! Modify it to your liking.
 string Card::get_english_rank() const {
-	return "";
+	string english_rank;
+	switch (rank){
+	case AS:
+		english_rank = "One"; break;
+	case DOS:
+		english_rank = "Two"; break;
+	case TRES:
+		english_rank = "Three"; break;
+	case CUATRO:
+		english_rank = "Four"; break;
+	case CINCO:
+		english_rank = "Five"; break;
+	case SEIS:
+		english_rank = "Six"; break;
+	case SIETE:
+		english_rank = "Seven"; break;
+	case SOTA:
+		english_rank = "Ten"; break;
+	case CABALLO:
+		english_rank = "Eleven"; break;
+	case REY:
+		english_rank = "Twelve"; break;
+	}
+	return english_rank;
 }
-
 
 
 // Assigns a numerical value to card based on rank.
 // AS=1, DOS=2, ..., SIETE=7, SOTA=10, CABALLO=11, REY=12
 int Card::get_rank() const {
 	return static_cast<int>(rank)+1;
+}
+
+// Returns the value of the card
+double Card::get_value() const{
+	if ((this->get_english_rank() == "Ten") || (this->get_english_rank() == "Eleven") || (this->get_english_rank() == "Twelve")){
+		return 0.5;
+	}
+	else
+		return (this->get_rank());
 }
 
 // Comparison operator for cards
@@ -134,11 +171,72 @@ bool Card::operator < (Card card2) const {
 /* *************************************************
 Hand class
 ************************************************* */
-// Implemente the member functions of the Hand class here.
+// Default constructor, creates an empty vector cards
+Hand::Hand(){}
 
+// Generate a random card, display its statistics, and add it to the hand 
+void Hand::draw(){
+	Card newcard = Card(); 
+	cards.push_back(newcard);
+	std::cout << "The card drawn is the " << newcard.get_english_rank() << " of " << newcard.get_english_suit() << "\n";
+	value += newcard.get_value();
+	std::cout << "The current hand value is: " << value << "\n";
+}
+
+// Checks to see if total value has exceeded bust value
+// Returns 1 if busted, 0 if not
+bool Hand::bust(){
+	if (value > 7.5){
+		std::cout << "Hand busted!" << "\n";
+		return 1;
+	}
+	else return 0;
+}
+
+// Accessor function: returns total value of cards in hand
+double Hand::hand_value() const{
+	return this->value;
+}
+
+
+// Compares two hands and accounts for busts.
+// Returns 1 if player's hand is bigger, 0 if dealer wins
+// House's advantage: the dealer wins if both hands are busted.
+// 3 cases: 1 if player wins, 0 if dealer wins, 2 if they draw
+unsigned int Hand::compare(Hand dealer){
+	if ((this->bust() == 1) && (dealer.bust() == 1)){
+		return 0;
+	}
+	else if ((this->bust() == 1) && (dealer.bust() == 0)){
+		return 0;
+	}
+	else if ((this->bust() == 0) && (dealer.bust() == 1)){
+		return 1;
+	}
+	else if ((this->bust() == 0) && (dealer.bust() == 0)){
+		if (this->hand_value() == dealer.hand_value()){
+			return 2;
+		}
+		else if (this->hand_value() > dealer.hand_value()){
+			return 1;
+		}
+		else if (this->hand_value() < dealer.hand_value()){
+			return 0;
+		}
+	}
+}
 
 
 /* *************************************************
 Player class
 ************************************************* */
-// Implemente the member functions of the Player class here.
+// Constructor: gives player m dollars 
+Player::Player(int m) : money(m) {} 
+
+// Transfers money from one person to another, amount (the bet) can be positive or negative;
+// A positive amount means "this" player gained money from dealer
+// A negative amount means "this" player gives money to dealer
+void Player::exchange_money(Player dealer, int amount){
+	money += amount;
+	dealer.money -= amount;
+}
