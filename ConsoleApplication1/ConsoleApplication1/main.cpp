@@ -7,11 +7,8 @@
 #include "cards.h"
 using namespace std;
 
-// Global constants (if any)
-
 
 // *** NON MEMBER FUNCTION DECLARATIONS *** //
-
 // Function that ensures all situations are suitable for one game cycle to occur, and then initiates cycle
 // Ensures that player balance is > 0, dealer has not lost 900, and the bet made is acceptable
 // Stop when the player loses all his money, or if the dealer loses 900
@@ -20,7 +17,34 @@ void play_game(Player& user, Player& dealer);
 // Function that assumes all conditions are suitable for one cycle to run based on a bet
 void cycle(int bet, Player& user, Player& dealer_);
 
+
+
+
 // *** NON MEMBER FUNCTION IMPLEMENTATIONS *** //
+void play_game(Player& user, Player& dealer){
+	while ((user.get_balance() > 0) && (dealer.get_total_loss() <= 900)){
+		int bet = 0;
+		std::cout << "Your current balance is " << user.get_balance() << " dollars" << "\n"
+			<< "Enter the amount you would like to bet: ";
+		cin >> bet;
+		while ((bet <= 0) || (bet > user.get_balance())){
+			// Check if a bet is made that is negative or over the user's balance
+			std::cout << "Please enter a valid bet amount: ";
+			std::cin >> bet;
+		}
+		cycle(bet, user, dealer);
+		if (user.get_balance() <= 0){
+			std::cout << "You have gone bankrupt!" << "\n";
+			return;
+		}
+		if (dealer.get_total_loss() > 900){
+			std::cout << "You have won too much from the casino!" << "\n";
+			return;
+		}
+	}
+
+}
+
 void cycle(int bet, Player& user, Player& dealer_){
 	Hand player;
 	Hand dealer;
@@ -55,9 +79,8 @@ void cycle(int bet, Player& user, Player& dealer_){
 			break;
 		}
 	}
-
 	std::cout << "\n"; 
-	// Now, the dealer 
+	// Now, the dealer draws cards to his hand
 	std::cout << "Dealer's hand..." << "\n";
 	while (dealer.hand_value() < 5.5){
 		dealer.draw();
@@ -78,14 +101,15 @@ void cycle(int bet, Player& user, Player& dealer_){
 	else if (status == 2){
 		user.exchange_money(dealer_, 0);
 	}
+	std::cout << "\n" << "**********************************" << "\n";
 }
 
 // Stub for main
 int main(){
+	std::cout << "Welcome to Siete y Medio!" << "\n";
 	Player user(100);
-	Player dealer(900);
-	cycle(50, user, dealer);
-	std::cout << "User's Balance: " << user.get_balance() << "\n";
-	std::cout << "Dealer's balance: " << dealer.get_balance() << "\n";
+	Player dealer(1000);
+	play_game(user, dealer);
+	std::cout << "Thanks for playing!" << "\n";
 	return 0;
 }
