@@ -18,19 +18,17 @@ void play_game(Player& user, Player& dealer);
 void cycle(int bet, Player& user, Player& dealer_);
 
 
-
-
 // *** NON MEMBER FUNCTION IMPLEMENTATIONS *** //
 void play_game(Player& user, Player& dealer){
 	while ((user.get_balance() > 0) && (dealer.get_total_loss() <= 900)){
 		int bet = 0;
 		std::cout << "Your current balance is " << user.get_balance() << " dollars" << "\n"
-			<< "Enter the amount you would like to bet: ";
+			<< "Enter the integer amount you would like to bet: ";
 		cin >> bet;
 		while ((bet <= 0) || (bet > user.get_balance())){
 			// Check if a bet is made that is negative or over the user's balance
-			std::cout << "Please enter a valid bet amount: ";
-			std::cin >> bet;
+			bet = 15;
+			std::cout << "Please enter a valid bet amount: "; 
 		}
 		cycle(bet, user, dealer);
 		if (user.get_balance() <= 0){
@@ -48,7 +46,9 @@ void play_game(Player& user, Player& dealer){
 void cycle(int bet, Player& user, Player& dealer_){
 	Hand player;
 	Hand dealer;
+	std::cout << "You draw..." << "\n";
 	player.draw();
+	std::cout << "The dealer draws..." << "\n";
 	dealer.draw(); // I assume on the first turn, they both show their cards?
 	std::cout << "Your hand: " << "\n"; 
 	player.show_hand();
@@ -69,22 +69,20 @@ void cycle(int bet, Player& user, Player& dealer_){
 			player.draw();
 			std::cout << "Your hand: " << "\n";
 			player.show_hand();
-			if (player.bust() == 1){
-				std::cout << "Hand busted!" << "\n";
-			}
 		}
 		else if (response == "n"){
 			std::cout << "Your hand: " << "\n";
 			player.show_hand();
+			std::cout << "Dealer's turn to draw" << "\n";
 			break;
 		}
 	}
 	std::cout << "\n"; 
 	// Now, the dealer draws cards to his hand
-	std::cout << "Dealer's hand..." << "\n";
 	while (dealer.hand_value() < 5.5){
 		dealer.draw();
 		if (dealer.hand_value() >= 5.5){
+			std::cout << "The dealer stops drawing, his hand is..." << "\n";
 			dealer.show_hand(); 
 		}
 	}
