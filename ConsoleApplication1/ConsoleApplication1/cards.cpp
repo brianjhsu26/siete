@@ -187,9 +187,13 @@ void Hand::draw(){
 // Also shows the hand's value
 void Hand::show_hand(){
 	for (auto i = 0; i < cards.size(); i++){
-		std::cout << cards[i].get_english_rank() << " de " << cards[i].get_english_suit() << "\n";
+		std::cout << setw(8) << cards[i].get_english_rank() << " of " << cards[i].get_english_suit()
+			<< setw(10) << cards[i].get_spanish_rank() << " de " << cards[i].get_spanish_suit() << "\n";
 	}
 	std::cout << "The value of the hand is: " << value << "\n";
+	if (this->bust() == 1){
+		std::cout << "Busted!" << "\n";
+	}
 }
 
 // Checks to see if total value has exceeded bust value
