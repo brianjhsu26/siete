@@ -67,6 +67,7 @@ public:
 	Hand();
 	void draw(); // Draws a random card from the deck 
 	void show_hand();
+	void show_hand(ofstream& file); // Overloaded show_hand to output hand into ofstream
 	bool bust(); // Check if the hand has gone bust (i.e. the values of the cards exceed 7.5) [implementing... done]
 	double hand_value() const; // Returns total value of cards in hand
 	unsigned int compare(Hand dealer); // Compares two hands to see which as the higher value 
