@@ -197,6 +197,18 @@ void Hand::show_hand(){
 	}
 }
 
+void Hand::show_hand(ofstream& file){
+	for (auto i = 0; i < cards.size(); i++){
+		std::string card_english = cards[i].get_english_rank() + " of " + cards[i].get_english_suit();
+		std::string card_espanol = cards[i].get_spanish_rank() + " de " + cards[i].get_spanish_suit();
+		file << "       " << setw(20) << left << card_english << setw(20) << card_espanol << "\n";
+	}
+	file << "The value of the hand is: " << value << "\n";
+	if (this->bust() == 1){
+		file << "Busted!" << "\n";
+	}
+}
+
 // Checks to see if total value has exceeded bust value
 // Returns 1 if busted, 0 if not
 bool Hand::bust(){

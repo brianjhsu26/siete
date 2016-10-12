@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <iomanip>
 #include <cstdlib>
 #include "cards.h"
 using namespace std;
@@ -16,9 +17,9 @@ void play_game(Player& user, Player& dealer);
 
 // Function that assumes all conditions are suitable for one cycle to run based on a bet
 // Also takes in a output stream to save each cycle into the log
-void cycle(int bet, Player& user, Player& dealer_, std::ofstream& log);
+void cycle(const int& bet, Player& user, Player& dealer_, std::ofstream& log);
 
-void log_cycle(std::ofstream file, const int& bet, const Hand& user, const Hand& dealer );
+void log_cycle(std::ofstream& file, const int& bet, Hand& user, Hand& dealer, Player& user_);
 
 // *** NON MEMBER FUNCTION IMPLEMENTATIONS *** //
 void play_game(Player& user, Player& dealer){
@@ -38,6 +39,8 @@ void play_game(Player& user, Player& dealer){
 			std::cout << "Please enter a valid bet amount: "; 
 			std::cin >> bet; 
 		}
+		game_log << "**********************************************" << "\n" << "Game " << game_num << "\n"; // Too much trouble to implement in log_game fxn
+		game_num++;
 		cycle(bet, user, dealer, game_log);
 		if (user.get_balance() <= 0){
 			std::cout << "You have gone bankrupt!" << "\n";
@@ -48,10 +51,10 @@ void play_game(Player& user, Player& dealer){
 			return;
 		}
 	}
-
+	game_log.close();
 }
 
-void cycle(int bet, Player& user, Player& dealer_, std::ofstream& log){
+void cycle(const int& bet, Player& user, Player& dealer_, std::ofstream& log){
 	Hand player;
 	Hand dealer;
 	std::cout << "You draw..." << "\n";
@@ -109,11 +112,18 @@ void cycle(int bet, Player& user, Player& dealer_, std::ofstream& log){
 	std::cout << "\n" << "**********************************" << "\n";
 
 	// Now, write the game history into the file before the variables go out of scope 
-
+	log_cycle(log, bet, player, dealer, user);
 }
 
-void log_cycle(std::ofstream file, const int& bet, const Hand& user, const Hand& dealer){
-
+void log_cycle(std::ofstream& file, const int& bet, Hand& user, Hand& dealer, Player& user_){
+	// From play_game function, there is already the row of stars and the game number 
+	file << "\n";
+	file << "Bet: " << bet << setw(37) << right << "Resulting Balance: " << user_.get_balance() << "\n";
+	file << "Your cards" << "\n";
+	user.show_hand(file);
+	file << "\n" << "Dealer's cards" << "\n";
+	dealer.show_hand(file);
+	file << "**********************************************" << "\n";
 }
 
 // Stub for main
