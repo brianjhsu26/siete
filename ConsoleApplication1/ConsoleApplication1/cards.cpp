@@ -187,8 +187,9 @@ void Hand::draw(){
 // Also shows the hand's value
 void Hand::show_hand(){
 	for (auto i = 0; i < cards.size(); i++){
-		std::cout << setw(8) << cards[i].get_english_rank() << " of " << cards[i].get_english_suit()
-			<< setw(10) << cards[i].get_spanish_rank() << " de " << cards[i].get_spanish_suit() << "\n";
+		std::string card_english = cards[i].get_english_rank() + " of " + cards[i].get_english_suit();
+		std::string card_espanol = cards[i].get_spanish_rank() + " de " + cards[i].get_spanish_suit();
+		std::cout << "       " << setw(20) << left << card_english << setw(20) << card_espanol << "\n";
 	}
 	std::cout << "The value of the hand is: " << value << "\n";
 	if (this->bust() == 1){
