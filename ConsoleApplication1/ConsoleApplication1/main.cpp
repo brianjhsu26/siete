@@ -15,22 +15,30 @@ using namespace std;
 void play_game(Player& user, Player& dealer); 
 
 // Function that assumes all conditions are suitable for one cycle to run based on a bet
-void cycle(int bet, Player& user, Player& dealer_);
+// Also takes in a output stream to save each cycle into the log
+void cycle(int bet, Player& user, Player& dealer_, std::ofstream& log);
 
+void log_cycle(std::ofstream file, const int& bet, const Hand& user, const Hand& dealer );
 
 // *** NON MEMBER FUNCTION IMPLEMENTATIONS *** //
 void play_game(Player& user, Player& dealer){
+	// First keep track of the game number and open a log to contain the game every time it is played
+	size_t game_num = 1;
+	std::ofstream game_log;
+	game_log.open("log.txt");
+
 	while ((user.get_balance() > 0) && (dealer.get_total_loss() <= 900)){
 		int bet = 0;
 		std::cout << "Your current balance is " << user.get_balance() << " dollars" << "\n"
 			<< "Enter the integer amount you would like to bet: ";
-		cin >> bet;
+		cin.clear(); cin >> bet;
 		while ((bet <= 0) || (bet > user.get_balance())){
 			// Check if a bet is made that is negative or over the user's balance
-			bet = 15;
+			cin.clear();
 			std::cout << "Please enter a valid bet amount: "; 
+			std::cin >> bet; 
 		}
-		cycle(bet, user, dealer);
+		cycle(bet, user, dealer, game_log);
 		if (user.get_balance() <= 0){
 			std::cout << "You have gone bankrupt!" << "\n";
 			return;
@@ -43,19 +51,18 @@ void play_game(Player& user, Player& dealer){
 
 }
 
-void cycle(int bet, Player& user, Player& dealer_){
+void cycle(int bet, Player& user, Player& dealer_, std::ofstream& log){
 	Hand player;
 	Hand dealer;
 	std::cout << "You draw..." << "\n";
 	player.draw();
 	std::cout << "The dealer draws..." << "\n";
-	dealer.draw(); // I assume on the first turn, they both show their cards?
+	dealer.draw(); 
 	std::cout << "Your hand: " << "\n"; 
 	player.show_hand();
 	std::cout << "Dealer's hand: " << "\n";
 	dealer.show_hand();
 	std::cout << "\n";
-	
 	// First, the player draws until he busts or stands
 	while (player.bust() != 1){
 		std::string response;
@@ -100,6 +107,13 @@ void cycle(int bet, Player& user, Player& dealer_){
 		user.exchange_money(dealer_, 0);
 	}
 	std::cout << "\n" << "**********************************" << "\n";
+
+	// Now, write the game history into the file before the variables go out of scope 
+
+}
+
+void log_cycle(std::ofstream file, const int& bet, const Hand& user, const Hand& dealer){
+
 }
 
 // Stub for main
