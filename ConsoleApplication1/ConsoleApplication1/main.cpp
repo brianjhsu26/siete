@@ -19,6 +19,7 @@ void play_game(Player& user, Player& dealer);
 // Also takes in a output stream to save each cycle into the log
 void cycle(const int& bet, Player& user, Player& dealer_, std::ofstream& log);
 
+// Function logs each game cycle to an output .txt file 
 void log_cycle(std::ofstream& file, const int& bet, Hand& user, Hand& dealer, Player& user_);
 
 // *** NON MEMBER FUNCTION IMPLEMENTATIONS *** //
@@ -26,7 +27,7 @@ void play_game(Player& user, Player& dealer){
 	// First keep track of the game number and open a log to contain the game every time it is played
 	size_t game_num = 1;
 	std::ofstream game_log;
-	game_log.open("log.txt");
+	game_log.open("game_log.txt");
 
 	while ((user.get_balance() > 0) && (dealer.get_total_loss() <= 900)){
 		int bet = 0;
@@ -36,10 +37,13 @@ void play_game(Player& user, Player& dealer){
 		while ((bet <= 0) || (bet > user.get_balance())){
 			// Check if a bet is made that is negative or over the user's balance
 			cin.clear();
+			int ch;
+			while ((ch = getchar()) != '\n' && ch != EOF)
+				;
 			std::cout << "Please enter a valid bet amount: "; 
 			std::cin >> bet; 
 		}
-		game_log << "**********************************************" << "\n" << "Game " << game_num << "\n"; // Too much trouble to implement in log_game fxn
+		game_log << "**********************************************" << "\n" << "Game " << game_num << "\n"; 
 		game_num++;
 		cycle(bet, user, dealer, game_log);
 		if (user.get_balance() <= 0){
@@ -129,8 +133,8 @@ void log_cycle(std::ofstream& file, const int& bet, Hand& user, Hand& dealer, Pl
 // Stub for main
 int main(){
 	std::cout << "Welcome to Siete y Medio!" << "\n";
-	Player user(100);
-	Player dealer(1000);
+	Player user(100); // Allocate player funds here
+	Player dealer(1000); // Allocate dealer funds here 
 	play_game(user, dealer);
 	std::cout << "Thanks for playing!" << "\n";
 	return 0;
