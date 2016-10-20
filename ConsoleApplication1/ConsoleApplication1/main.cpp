@@ -37,6 +37,9 @@ void play_game(Player& user, Player& dealer){
 		while ((bet <= 0) || (bet > user.get_balance())){
 			// Check if a bet is made that is negative or over the user's balance
 			cin.clear();
+			int ch;
+			while ((ch = getchar()) != '\n' && ch != EOF)
+				;
 			std::cout << "Please enter a valid bet amount: "; 
 			std::cin >> bet; 
 		}
